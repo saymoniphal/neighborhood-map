@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="css/neighbourhood.css"/>
+  </head>
+
+  <body>
+    <h3>Your Neighbourhood</h3>
+
+    <div id="map" data-bind="favourites: neighbourhood"></div>
+
+    <script src="js/knockout-3.4.2.js"></script>
+    <script src="js/neighbourhood.js"></script>
+    <script async defer
+	    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVedNVc5hfbdLDUgU4cbaN113ZQNInHHY&callback=initMap">
+    </script>
+  </body>
+</html>
