@@ -9,6 +9,14 @@
   <body>
     <h3>Your Neighbourhood</h3>
 
+    <input data-bind="textInput: filterText"/>
+
+    <ul data-bind="foreach: neighbourhood.places">
+      <!-- ko if: visible -->
+      <li data-bind="text: info"></li>
+      <!-- /ko -->
+    </ul>
+
     <div id="map" data-bind="favourites: neighbourhood"></div>
 
     <script src="js/knockout-3.4.2.js"></script>

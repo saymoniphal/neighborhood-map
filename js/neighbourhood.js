@@ -1,9 +1,9 @@
 var startingLocations = [
-    {lat: 37.8106392, lng: -122.4137818}, // sea lions
-    {lat: 37.2789135, lng: -121.934447},  // chez sovan
-    {lat: 37.6646415, lng: -122.4688944}, // moonstar
-    {lat: 37.7499201, lng: -122.1488391}, // oakland zoo
-    {lat: 37.3234317, lng: -122.0501822}, // kobe pho & grill
+    {location: {lat: 37.8106392, lng: -122.4137818}, info: "sea lions"}, // sea lions
+    {location: {lat: 37.2789135, lng: -121.934447}, info: "chez sovan"},  // chez sovan
+    {location: {lat: 37.6646415, lng: -122.4688944}, info: "moonstar"}, // moonstar
+    {location: {lat: 37.7499201, lng: -122.1488391}, info: "oakland zoo"}, // oakland zoo
+    {location: {lat: 37.3234317, lng: -122.0501822}, info: "kobe pho & grill"}, // kobe pho & grill
 ];
 
 function NeighbourhoodModel(map, geocoder, infoWindow) {
@@ -13,25 +13,48 @@ function NeighbourhoodModel(map, geocoder, infoWindow) {
 	'infoWindow': infoWindow,
 	'places': ko.observableArray(),
     }
+
+    this.filterText = ko.observable();
+
+    var self = this;
+    this.filterText.subscribe(function (newValue) {
+	ko.unwrap(self.neighbourhood.places).forEach(function (item) {
+	    if (item['info']().indexOf(newValue) == -1) {
+		item['visible'](false);
+	    } else {
+		item['visible'](true);
+	    }
+	});
+    });
 }
 
 ko.bindingHandlers.favourites = {
     init: function(element, valueAccessor, allBindings) {
 	var neighbourhood = ko.unwrap(valueAccessor());
 
-	var places = ko.unwrap(neighbourhood.places);
+	var places = neighbourhood.places;
 	var theMap = neighbourhood.map;
 
         startingLocations.forEach(function (item) {
             var marker = new google.maps.Marker({
-                position: item,
+                position: item.location,
                 map: theMap
             });
+	    var visibility = ko.observable(true);
             marker.addListener('click', function() {
                 showInfoFor(neighbourhood.geocoder, theMap, marker,
 			    neighbourhood.infoWindow);
             });
-            places.push({'marker': marker, 'location': item});
+            places.push({'marker': marker, 'location': item.location,
+			 'info': ko.observable(item.info),
+			 'visible': visibility});
+	    visibility.subscribe(function (newValue) {
+		if (newValue) {
+		    marker.setMap(theMap);
+		} else {
+		    marker.setMap(null);
+		}
+	    });
         });
     },
 
@@ -61,7 +84,7 @@ ko.bindingHandlers.favourites = {
 function initMap() {
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 15,
-        center: startingLocations[0],
+        center: startingLocations[0].location,
     });
 
     var geocoder = new google.maps.Geocoder;
