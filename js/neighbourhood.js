@@ -20,10 +20,10 @@ function NeighbourhoodModel(map, geocoder, placesService, infoWindow) {
     var self = this;
     this.filterText.subscribe(function (newValue) {
 	ko.unwrap(self.neighbourhood.places).forEach(function (item) {
-	    if (item['info']().indexOf(newValue) == -1) {
-		item['visible'](false);
+	    if (item.displayText().toLowerCase().indexOf(newValue.toLowerCase()) == -1) {
+		item.visible(false);
 	    } else {
-		item['visible'](true);
+		item.visible(true);
 	    }
 	});
     });
