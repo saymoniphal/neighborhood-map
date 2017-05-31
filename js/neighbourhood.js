@@ -6,10 +6,11 @@ var startingLocations = [
     {location: {lat: 37.3234287, lng: -122.0486346}, info: "kobe pho & grill"},
 ];
 
-function NeighbourhoodModel(map, geocoder, infoWindow) {
+function NeighbourhoodModel(map, geocoder, placesService, infoWindow) {
     this.neighbourhood = {
 	'map': map,
 	'geocoder': geocoder,
+	'placesService': placesService,
 	'infoWindow': infoWindow,
 	'places': ko.observableArray(),
     }
@@ -42,12 +43,18 @@ ko.bindingHandlers.favourites = {
             });
 	    var visibility = ko.observable(true);
 	    var infoText = ko.observable(item.info);
+	    var addressText = ko.observable('');
             marker.addListener('click', function() {
                 showInfoFor(theMap, marker, neighbourhood.infoWindow, ko.unwrap(infoText));
             });
-            places.push({'marker': marker, 'location': item.location,
-			 'info': infoText,
-			 'visible': visibility});
+	    var newPlace = {'marker': marker, 'location': item.location,
+			    'info': infoText, 'address': addressText,
+			    'visible': visibility};
+	    var displayText = ko.computed(function() {
+		return newPlace.info() + '\n' + newPlace.address();
+	    }, newPlace);
+	    newPlace.displayText = displayText;
+            places.push(newPlace);
 	    visibility.subscribe(function (newValue) {
 		if (newValue) {
 		    marker.setMap(theMap);
@@ -58,9 +65,21 @@ ko.bindingHandlers.favourites = {
 	    neighbourhood.geocoder.geocode({'location': item.location}, function(results, status) {
 		if (status === 'OK') {
 		    text = results[0].formatted_address;
-		    infoText(text);
+		    addressText(text);
 		} else {
 		    window.alert('Geocoder failed due to: ' + status);
+		}
+	    });
+	    var nearbyRequest = {
+		location: item.location,
+		type: 'point_of_interest',
+		rankBy: google.maps.places.RankBy.DISTANCE
+	    };
+	    neighbourhood.placesService.nearbySearch(nearbyRequest, function(results, status) {
+		if (status === 'OK') {
+		    infoText(results[0].name);
+		} else {
+		    window.alert('Places search failed due to: ' + status);
 		}
 	    });
         });
@@ -101,9 +120,10 @@ function initMap() {
     map.fitBounds(bounds);
 
     var geocoder = new google.maps.Geocoder;
+    var placesService = new google.maps.places.PlacesService(map);
     var infoWindow = new google.maps.InfoWindow;
 
-    ko.applyBindings(new NeighbourhoodModel(map, geocoder, infoWindow));
+    ko.applyBindings(new NeighbourhoodModel(map, geocoder, placesService, infoWindow));
 }
 
 function showInfoFor(map, marker, infoWindow, text) {
