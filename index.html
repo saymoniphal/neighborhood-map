@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="css/neighbourhood.css"/>
+    <title>Your Neighbourhood</title>
+  </head>
+
+  <body>
+    <h3>Your Neighbourhood</h3>
+
+    <input data-bind="textInput: filterText"/>
+
+    <ul data-bind="foreach: neighbourhood.places">
+      <!-- ko if: visible -->
+      <li data-bind="text: displayText"></li>
+      <!-- /ko -->
+    </ul>
+
+    <div id="map" data-bind="favourites: neighbourhood"></div>
+
+    <script src="js/knockout-3.4.2.js"></script>
+    <script src="js/neighbourhood.js"></script>
+    <script async defer
+	    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChk362NqUIgzyE_9W6_6yBBer9OvM47M0&callback=initMap&libraries=places">
+    </script>
+  </body>
+</html>
