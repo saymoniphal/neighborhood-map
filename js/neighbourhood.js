@@ -1,9 +1,9 @@
 var startingLocations = [
-    {location: {lat: 37.810635, lng: -122.4115931}, info: "sea lions"}, // sea lions
-    {location: {lat: 37.2789093, lng: -121.9322583}, info: "chez sovan"},  // chez sovan
-    {location: {lat: 37.664639, lng: -122.467593}, info: "moonstar"}, // moonstar
-    {location: {lat: 37.7499159, lng: -122.1466504}, info: "oakland zoo"}, // oakland zoo
-    {location: {lat: 37.3234287, lng: -122.0486346}, info: "kobe pho & grill"}, // kobe pho & grill
+    {location: {lat: 37.810635, lng: -122.4115931}, info: "sea lions"},
+    {location: {lat: 37.2789093, lng: -121.9322583}, info: "chez sovan"},
+    {location: {lat: 37.664639, lng: -122.467593}, info: "moonstar"},
+    {location: {lat: 37.7499159, lng: -122.1466504}, info: "oakland zoo"},
+    {location: {lat: 37.3234287, lng: -122.0486346}, info: "kobe pho & grill"},
 ];
 
 function NeighbourhoodModel(map, geocoder, infoWindow) {
