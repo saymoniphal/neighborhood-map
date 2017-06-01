@@ -13,6 +13,7 @@ function NeighbourhoodModel(map, geocoder, placesService, infoWindow) {
 	'placesService': placesService,
 	'infoWindow': infoWindow,
 	'places': ko.observableArray(),
+	'currentActive': null,
     }
 
     this.filterText = ko.observable();
@@ -27,6 +28,14 @@ function NeighbourhoodModel(map, geocoder, placesService, infoWindow) {
 	    }
 	});
     });
+}
+
+function makeActive(newPlace, neighbourhood) {
+    if (neighbourhood.currentActive !== null) {
+	neighbourhood.currentActive.active(false);
+    }
+    newPlace.active(true);
+    neighbourhood.currentActive = newPlace;
 }
 
 ko.bindingHandlers.favourites = {
@@ -44,12 +53,16 @@ ko.bindingHandlers.favourites = {
 	    var visibility = ko.observable(true);
 	    var infoText = ko.observable(item.info);
 	    var addressText = ko.observable('');
-            marker.addListener('click', function() {
-                showInfoFor(theMap, marker, neighbourhood.infoWindow, ko.unwrap(infoText));
-            });
+	    var active = ko.observable(false);
 	    var newPlace = {'marker': marker, 'location': item.location,
 			    'info': infoText, 'address': addressText,
-			    'visible': visibility};
+			    'visible': visibility, 'active': active};
+            marker.addListener('click', function() {
+		makeActive(newPlace, neighbourhood);
+	    });
+	    active.subscribe(function (newValue) {
+		showInfoFor(theMap, neighbourhood.infoWindow, newPlace);
+	    });
 	    var displayText = ko.computed(function() {
 		return newPlace.info() + '\n' + newPlace.address();
 	    }, newPlace);
@@ -126,7 +139,7 @@ function initMap() {
     ko.applyBindings(new NeighbourhoodModel(map, geocoder, placesService, infoWindow));
 }
 
-function showInfoFor(map, marker, infoWindow, text) {
-    infoWindow.setContent(text);
-    infoWindow.open(map, marker);
+function showInfoFor(map, infoWindow, place) {
+    infoWindow.setContent(place.info());
+    infoWindow.open(map, place.marker);
 }

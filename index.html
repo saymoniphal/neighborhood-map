@@ -24,11 +24,15 @@
 		   data-bind="textInput: filterText"/>
 	  </form>
 
-	  <ul class="list-group" data-bind="foreach: neighbourhood.places">
+	  <div class="list-group" data-bind="foreach: neighbourhood.places">
 	    <!-- ko if: visible -->
-	    <li class="list-group-item" data-bind="text: displayText"></li>
+	    <button type="button" class="list-group-item"
+		    data-bind="text: displayText,
+			       css: { active: active() },
+			       click: function(data, event) { makeActive(data, $root.neighbourhood) }">
+	    </button>
 	    <!-- /ko -->
-	  </ul>
+	  </div>
 	</div>
 
 	<div class="col-sm-8">
