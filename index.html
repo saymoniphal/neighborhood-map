@@ -26,7 +26,7 @@
 
           <div class="list-group" data-bind="foreach: neighbourhood.places">
             <!-- ko if: visible -->
-            <a class="list-group-item"
+            <a href="#" class="list-group-item"
                data-bind="html: displayText,
                           css: { active: active() },
                           click: function(data, event) { makeActive(data, $root.neighbourhood) }">
