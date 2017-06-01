@@ -26,11 +26,11 @@
 
 	  <div class="list-group" data-bind="foreach: neighbourhood.places">
 	    <!-- ko if: visible -->
-	    <button type="button" class="list-group-item"
-		    data-bind="text: displayText,
-			       css: { active: active() },
-			       click: function(data, event) { makeActive(data, $root.neighbourhood) }">
-	    </button>
+	    <a class="list-group-item"
+	       data-bind="html: displayText,
+			  css: { active: active() },
+			  click: function(data, event) { makeActive(data, $root.neighbourhood) }">
+	    </a>
 	    <!-- /ko -->
 	  </div>
 	</div>

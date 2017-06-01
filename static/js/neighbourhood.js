@@ -64,7 +64,7 @@ ko.bindingHandlers.favourites = {
 		showInfoFor(theMap, neighbourhood.infoWindow, newPlace);
 	    });
 	    var displayText = ko.computed(function() {
-		return newPlace.info() + '\n' + newPlace.address();
+		return '<div>' + '<h4>' + newPlace.info() + '</h4>\n<p>' + newPlace.address() + '</p>';
 	    }, newPlace);
 	    newPlace.displayText = displayText;
             places.push(newPlace);
@@ -140,6 +140,6 @@ function initMap() {
 }
 
 function showInfoFor(map, infoWindow, place) {
-    infoWindow.setContent(place.info());
+    infoWindow.setContent(place.displayText());
     infoWindow.open(map, place.marker);
 }
