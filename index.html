@@ -17,7 +17,7 @@
       <h3>Your Neighbourhood</h3>
 
       <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-3">
           <form>
             <input class="form-control" type="search"
                    placeholder="Search..."
@@ -35,17 +35,28 @@
           </div>
         </div>
 
-        <div class="col-sm-8">
+        <div class="col-sm-7">
           <div id="map" data-bind="favourites: neighbourhood">
           </div>
         </div>
 
-        <script src="static/js/knockout-3.4.2.js"></script>
-        <script src="static/js/neighbourhood.js"></script>
-        <script async defer
-                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChk362NqUIgzyE_9W6_6yBBer9OvM47M0&callback=initMap&libraries=places">
-        </script>
+	<div class="col-sm-2">
+	  <h4>Nearby Places</h4>
+
+	  <ul class="list-group" data-bind="foreach: neighbourhood.nearby">
+	    <li class="list-group-item" data-bind="text: name"></li>
+	  </ul>
+
+	  <footer class="small">Data sourced from Wikipedia using GeoData API</footer>
+	</div>
       </div>
+
+      <script src="static/js/jquery-3.2.1.min.js"></script>
+      <script src="static/js/knockout-3.4.2.js"></script>
+      <script src="static/js/neighbourhood.js"></script>
+      <script async defer
+              src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChk362NqUIgzyE_9W6_6yBBer9OvM47M0&callback=initMap&libraries=places">
+      </script>
     </div>
   </body>
 </html>

@@ -16,6 +16,7 @@ function NeighbourhoodModel(map, geocoder, placesService, infoWindow) {
         'infoWindow': infoWindow,
         'places': ko.observableArray(),
         'currentActive': null,
+        'nearby': ko.observableArray(),
     }
 
     this.filterText = ko.observable();
@@ -32,12 +33,30 @@ function NeighbourhoodModel(map, geocoder, placesService, infoWindow) {
     });
 }
 
+function loadNearby(place, neighbourhood) {
+    url = 'https://en.wikipedia.org/w/api.php';
+    query = {
+        action: 'query',
+        list: 'geosearch',
+        format: 'json',
+        gsradius: '1000',
+        gscoord: place.location.lat + '|' + place.location.lng,
+    };
+    neighbourhood.nearby.removeAll();
+    $.get(url, query, function(data) {
+        data.query.geosearch.forEach(function (item) {
+            neighbourhood.nearby.push({'name': item.title});
+        });
+    });
+}
+
 function makeActive(newPlace, neighbourhood) {
     if (neighbourhood.currentActive !== null) {
         neighbourhood.currentActive.active(false);
     }
     newPlace.active(true);
     neighbourhood.currentActive = newPlace;
+    loadNearby(newPlace, neighbourhood);
 }
 
 ko.bindingHandlers.favourites = {
