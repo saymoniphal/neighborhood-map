@@ -45,8 +45,24 @@ function loadNearby(place, neighbourhood) {
     neighbourhood.nearby.removeAll();
     $.get(url, query, function(data) {
         data.query.geosearch.forEach(function (item) {
-            neighbourhood.nearby.push({'name': item.title});
+            neighbourhood.nearby.push({'name': item.title,
+                                       'pageid': item.pageid});
         });
+    });
+}
+
+function gotoPage(nearbyPlace) {
+    url = 'https://en.wikipedia.org/w/api.php';
+    query = {
+        action: 'query',
+        format: 'json',
+        prop: 'info',
+        inprop: 'url',
+        pageids: nearbyPlace.pageid,
+    };
+    $.get(url, query, function(data) {
+        wikipediaUrl = data.query.pages[nearbyPlace.pageid].fullurl;
+        window.location.href = wikipediaUrl;
     });
 }
 

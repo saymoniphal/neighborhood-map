@@ -43,9 +43,10 @@
 	<div class="col-sm-2">
 	  <h4>Nearby Places</h4>
 
-	  <ul class="list-group" data-bind="foreach: neighbourhood.nearby">
-	    <li class="list-group-item" data-bind="text: name"></li>
-	  </ul>
+	  <div class="list-group" data-bind="foreach: neighbourhood.nearby">
+	    <a href="#" class="list-group-item"
+	       data-bind="text: name, click: gotoPage"></a>
+	  </div>
 
 	  <footer class="small">Data sourced from Wikipedia using GeoData API</footer>
 	</div>
