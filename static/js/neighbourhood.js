@@ -5,7 +5,7 @@ var startingLocations = [
     {location: {lat: 37.2789093, lng: -121.9322583}, info: "chez sovan"},
     {location: {lat: 37.664639, lng: -122.467593}, info: "moonstar"},
     {location: {lat: 37.7499159, lng: -122.1466504}, info: "oakland zoo"},
-    {location: {lat: 37.3234287, lng: -122.0486346}, info: "kobe pho & grill"},
+    {location: {lat: 37.3720051, lng: -122.0389073}, info: "sunnyvale library"},
 ];
 
 function NeighbourhoodModel(map, geocoder, placesService, infoWindow) {
@@ -98,7 +98,12 @@ ko.bindingHandlers.favourites = {
                 makeActive(newPlace, neighbourhood);
             });
             active.subscribe(function (newValue) {
-                showInfoFor(theMap, neighbourhood.infoWindow, newPlace);
+                if (newValue) {
+                    marker.setAnimation(google.maps.Animation.BOUNCE);
+                    showInfoFor(theMap, neighbourhood.infoWindow, newPlace);
+                } else {
+                    marker.setAnimation(null);
+                }
             });
             var displayText = ko.computed(function() {
                 return '<div>' + '<h4>' + newPlace.info() + '</h4>\n<p>' + newPlace.address() + '</p>';
@@ -112,13 +117,15 @@ ko.bindingHandlers.favourites = {
                     marker.setMap(null);
                 }
             });
-            neighbourhood.geocoder.geocode({'location': item.location}, function(results, status) {
-                if (status === 'OK') {
-                    text = results[0].formatted_address;
-                    addressText(text);
-                } else {
-                    window.alert('Geocoder failed due to: ' + status);
-                }
+            ko.tasks.schedule(function() {
+                neighbourhood.geocoder.geocode({'location': item.location}, function(results, status) {
+                    if (status === 'OK') {
+                        text = results[0].formatted_address;
+                        addressText(text);
+                    } else {
+                        window.alert('Geocoder failed due to: ' + status);
+                    }
+                })
             });
             var nearbyRequest = {
                 location: item.location,
