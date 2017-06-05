@@ -10,8 +10,8 @@ services when a location is selected.
 
 ## Project structure
 
-Since it is a single page web application, the project consists of an html page,
-and static folder for javascript and stylesheet.
+The project consists of an html page, and a static folder for javascript and
+stylesheet.
 
 This project uses KnockOut framework to help managing the link between model and
 its view.
