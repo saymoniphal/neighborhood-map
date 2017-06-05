@@ -1,5 +1,6 @@
 // -*- indent-tabs-mode: nil -*-
 
+// Locations to be marked on the map
 var startingLocations = [
     {location: {lat: 37.810635, lng: -122.4115931}, info: "sea lions"},
     {location: {lat: 37.2789093, lng: -121.9322583}, info: "chez sovan"},
@@ -8,6 +9,7 @@ var startingLocations = [
     {location: {lat: 37.3720051, lng: -122.0389073}, info: "sunnyvale library"},
 ];
 
+// 
 function NeighbourhoodModel(map, geocoder, placesService, infoWindow) {
     this.neighbourhood = {
         'map': map,
@@ -33,26 +35,31 @@ function NeighbourhoodModel(map, geocoder, placesService, infoWindow) {
     });
 }
 
+// Use wikipedia API to get nearby places
 function loadNearby(place, neighbourhood) {
-    url = 'https://en.wikipedia.org/w/api.php';
+    url = 'https://en.wikipedia.org/w/api.php?origin=*';
     query = {
         action: 'query',
-        list: 'geosearch',
         format: 'json',
+        list: 'geosearch',
         gsradius: '1000',
         gscoord: place.location.lat + '|' + place.location.lng,
     };
     neighbourhood.nearby.removeAll();
-    $.get(url, query, function(data) {
-        data.query.geosearch.forEach(function (item) {
-            neighbourhood.nearby.push({'name': item.title,
+    $.getJSON(url, query)
+        .done(function(data) {
+            data.query.geosearch.forEach(function (item) {
+                neighbourhood.nearby.push({'name': item.title,
                                        'pageid': item.pageid});
+            });
+        })
+        .fail(function() {
+            console.log("Error querying wikipedia for nearby location!");
         });
-    });
 }
 
 function gotoPage(nearbyPlace) {
-    url = 'https://en.wikipedia.org/w/api.php';
+    url = 'https://en.wikipedia.org/w/api.php?origin=*';
     query = {
         action: 'query',
         format: 'json',
@@ -60,10 +67,14 @@ function gotoPage(nearbyPlace) {
         inprop: 'url',
         pageids: nearbyPlace.pageid,
     };
-    $.get(url, query, function(data) {
-        wikipediaUrl = data.query.pages[nearbyPlace.pageid].fullurl;
-        window.location.href = wikipediaUrl;
-    });
+    $.getJSON(url, query)
+        .done(function(data) {
+            wikipediaUrl = data.query.pages[nearbyPlace.pageid].fullurl;
+            window.location.href = wikipediaUrl;
+        })
+        .fail(function() {
+            console.log("Fail to go to wikipedia page!");
+        });
 }
 
 function makeActive(newPlace, neighbourhood) {
@@ -97,6 +108,7 @@ ko.bindingHandlers.favourites = {
             marker.addListener('click', function() {
                 makeActive(newPlace, neighbourhood);
             });
+            // animate the marker on the map when a place is selected
             active.subscribe(function (newValue) {
                 if (newValue) {
                     marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -106,7 +118,8 @@ ko.bindingHandlers.favourites = {
                 }
             });
             var displayText = ko.computed(function() {
-                return '<div>' + '<h4>' + newPlace.info() + '</h4>\n<p>' + newPlace.address() + '</p>';
+                return '<div>' + '<h4>' + newPlace.info() + '</h4>\n<p>' +
+                                        newPlace.address() + '</p>';
             }, newPlace);
             newPlace.displayText = displayText;
             places.push(newPlace);
@@ -118,7 +131,8 @@ ko.bindingHandlers.favourites = {
                 }
             });
             ko.tasks.schedule(function() {
-                neighbourhood.geocoder.geocode({'location': item.location}, function(results, status) {
+                neighbourhood.geocoder.geocode({'location': item.location},
+                                                function(results, status) {
                     if (status === 'OK') {
                         text = results[0].formatted_address;
                         addressText(text);
@@ -132,7 +146,8 @@ ko.bindingHandlers.favourites = {
                 type: 'point_of_interest',
                 rankBy: google.maps.places.RankBy.DISTANCE
             };
-            neighbourhood.placesService.nearbySearch(nearbyRequest, function(results, status) {
+            neighbourhood.placesService.nearbySearch(nearbyRequest,
+                                                    function(results, status) {
                 if (status === 'OK') {
                     infoText(results[0].name);
                 } else {
